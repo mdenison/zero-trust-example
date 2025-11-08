@@ -1,0 +1,48 @@
+authenticate_service_url: https://authenticate.localhost.pomerium.io
+idp_provider: oidc
+idp_client_id: 'grafana_client'
+idp_client_secret: 'yc5Pov3fCzyyrzjLKd2DGyw312ap0g2z'
+idp_provider_url: 'http://keycloak.localhost.pomerium.io:8080/realms/grafana_realm'
+#log_level: debug
+#proxy_log_level: debug
+
+signing_key: LS0tLS1CRUdJTiBFQyBQUklWQVRFIEtFWS0tLS0tCk1IY0NBUUVFSVA2TUN5UFI5OUNmSEVkU0s4cVdzbk51Q0RyMVZ3ay93RER1RVhyQitELzZvQW9HQ0NxR1NNNDkKQXdFSG9VUURRZ0FFQ0JTK3gyQnJRNVJqNHJFcU5PSEVsUFVESXJiRlNhRitoWEhEL1RYby9rQWVKU1lJSjJHVwpZMnE0a0NPNTU4RmdoYmxDTUplYVdjV1luT3JuZkpxeXRnPT0KLS0tLS1FTkQgRUMgUFJJVkFURSBLRVktLS0tLQo=
+
+pass_identity_headers: true
+
+jwt_claims_headers:
+  X-User-Email: email
+  X-User-Name: name
+  X-User-Roles: roles
+  X-User-Groups: groups
+
+routes:
+  - from: https://grafana.localhost.pomerium.io
+    to: http://grafana:3000
+    path: /admin
+    policy:
+      allow:
+        and:
+          - domain:
+              is: interne-firma.xyz
+    allow_any_authenticated_user: false
+    allow_spdy: true
+    pass_identity_headers: true
+    set_request_headers:
+      X-Forwarded-Proto: https
+
+  - from: https://grafana.localhost.pomerium.io
+    to: http://grafana:3000
+    policy:
+      allow:
+        or:
+          - domain:
+              is: interne-firma.xyz
+          - domain:
+              is: externe-firma.xyz
+    allow_any_authenticated_user: false
+    allow_spdy: true
+    pass_identity_headers: true
+    set_request_headers:
+      X-Forwarded-Proto: https
+

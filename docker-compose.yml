@@ -1,0 +1,80 @@
+services:
+  pomerium:
+    image: pomerium/pomerium:v0.31.1
+    volumes:
+      - ./config/pomerium-config.yaml:/pomerium/config.yaml:ro
+    ports:
+      - 443:443
+
+  keycloak-database:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: keycloak_password
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: [ "CMD", "pg_isready", "-U", "keycloak" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  keycloak:
+    image: keycloak/keycloak:26.4.2
+    environment:
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://keycloak-database:5432/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: keycloak_password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: admin
+      KC_HOSTNAME_STRICT: false
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HTTP_ENABLED: true
+    command:
+      - start-dev
+    ports:
+      - "8080:8080"
+    depends_on:
+      keycloak-database:
+        condition: service_healthy
+    networks:
+      default:
+        aliases:
+          - keycloak.localhost.pomerium.io
+
+  grafana:
+    image: grafana/grafana:12.2.1
+    volumes:
+      - ./config/grafana.ini:/etc/grafana/grafana.ini:ro
+      - grafana_data:/var/lib/grafana
+      - ./config/jwks.json:/etc/grafana/jwks/jwks.json:ro
+    depends_on:
+      - keycloak
+      - pomerium
+
+  loki:
+    image: grafana/loki:3.5.8
+    command: [ "-config.file=/etc/loki/config.yml" ]
+    volumes:
+      - ./config/loki-config.yml:/etc/loki/config.yml:ro
+      - ./.loki-data:/loki
+    restart: unless-stopped
+
+  alloy:
+    image: grafana/alloy:v1.11.0
+    volumes:
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ./config/alloy-config.alloy:/etc/alloy/config.alloy:ro
+    depends_on:
+      - loki
+    restart: unless-stopped
+
+
+volumes:
+  postgres_data:
+    name: keycloak_postgres_data
+  grafana_data:
+    name: grafana_data
