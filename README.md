@@ -35,7 +35,9 @@ Dieses Repository startet eine lokale Demo-Umgebung, in der eine Grafana-Instanz
    - Pomerium Authenticate:   https://authenticate.localhost.pomerium.io
    - Keycloak Admin Console:   http://localhost:8080
 
-> Hinweis: Der direkte Grafana-Port 3000 ist exponiert, im Normalfall aber nicht nötig – der Zugang sollte über Pomerium erfolgen.
+> Hinweis: Von den folgenden schritten, müsste eigentlich nur Keycloak konfigurieren ausgeführt werden und 
+> das idp_client_secret in der pomerium-config.yaml setzen. Die resetlichen Schritte sind eigentlich schon erledigt. 
+
 
 ## Keycloak konfigurieren
 Die Pomerium‑Konfiguration (`config/pomerium-config.yaml`) erwartet folgende Werte:
