@@ -70,6 +70,7 @@ Die Pomerium‑Konfiguration (`config/pomerium-config.yaml`) erwartet folgende W
    - `admin`  → Client-Rolle: `admin`,  E-Mail: `admin@interne-firma.xyz`
    - `editor` → Client-Rolle: `editor`, E-Mail: `editor@interne-firma.xyz`
    - `viewer` → Client-Rolle: `viewer`, E-Mail: `viewer@interne-firma.xyz`
+   - `viewer-extern` → Client-Rolle: `viewer`, E-Mail: `viewer@externe-firma.xyz`
 
 > Wichtig: Die Domain im E‑Mail‑Claim steuert Pomeriums Domain-basierte Policies (siehe `config/pomerium-config.yaml`). Für den Admin‑Bereich ist `interne-firma.xyz` erforderlich.
 
@@ -121,15 +122,14 @@ Datei: `config/grafana.ini`
    oder Container-Label `container` verwenden, z. B. `container="/pomerium-1"` (je nach Compose‑Namen).
 
 ## Standard-URLs & Ports
+- Keycloak: http://localhost:8080 (Wird das genutzt um Keycloak initial zu konfigurieren)
 - Pomerium (Proxy): https://grafana.localhost.pomerium.io (443)
 - Pomerium Authenticate: https://authenticate.localhost.pomerium.io (443)
-- Keycloak: http://localhost:8080
-- Loki API: http://localhost:3100
 
 ## Volumes & Persistenz
 - Postgres: benannter Volume `keycloak_postgres_data`
 - Grafana: benannter Volume `grafana_data`
-- Loki: lokales Verzeichnis `./.loki-data`
+- Loki: lokales Verzeichnis `./.loki-data` (Wird zur laufzeit erstellt)
 
 ## Häufige Probleme & Tipps
 - Zertifikatswarnung: Bei erstem Zugriff auf Pomerium die Browser‑Warnung akzeptieren (selbstsigniertes Zertifikat).
@@ -139,6 +139,7 @@ Datei: `config/grafana.ini`
 - Kein Login in Grafana möglich: `jwks.json` muss zum `signing_key` in Pomerium passen; Zeit/Zeitzonen‑Drift (<5 min) vermeiden.
 - Loki leer: Prüfen, ob Alloy läuft und Docker‑Socket gemountet ist. In Compose ist `/var/run/docker.sock` vorhanden.
 - Ports belegt: Sicherstellen, dass 443/8080 frei sind oder Port‑Mapping anpassen.
+- idp_client_secret in der `config/pomerium-config.yaml` inkorrekt
 
 ## Stoppen & Aufräumen
 - Container stoppen: `docker compose down`

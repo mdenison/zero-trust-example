@@ -1,7 +1,7 @@
 authenticate_service_url: https://authenticate.localhost.pomerium.io
 idp_provider: oidc
 idp_client_id: 'grafana_client'
-idp_client_secret: 'yc5Pov3fCzyyrzjLKd2DGyw312ap0g2z'
+idp_client_secret: 'yc5Pov3fCzyyrzjLKd2DGyw312ap0g2z' # muss evtl. mit eigenem bzw. neuem client_secret ausgetauscht werden
 idp_provider_url: 'http://keycloak.localhost.pomerium.io:8080/realms/grafana_realm'
 #log_level: debug
 #proxy_log_level: debug
