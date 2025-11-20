@@ -1,8 +1,10 @@
 authenticate_service_url: https://authenticate.localhost.pomerium.io
+
 idp_provider: oidc
 idp_client_id: 'grafana_client'
 idp_client_secret: 'yc5Pov3fCzyyrzjLKd2DGyw312ap0g2z' # muss evtl. mit eigenem bzw. neuem client_secret ausgetauscht werden
 idp_provider_url: 'http://keycloak.localhost.pomerium.io:8080/realms/grafana_realm'
+
 #log_level: debug
 #proxy_log_level: debug
 
@@ -21,12 +23,12 @@ routes:
     to: http://grafana:3000
     path: /admin
     policy:
-      allow:
-        and:
-          - domain:
-              is: interne-firma.xyz
+      - allow:
+          and:
+            - domain:
+                is: interne-firma.xyz
+            - claim/roles: "admin"
     allow_any_authenticated_user: false
-    allow_spdy: true
     pass_identity_headers: true
     set_request_headers:
       X-Forwarded-Proto: https
@@ -41,7 +43,6 @@ routes:
           - domain:
               is: externe-firma.xyz
     allow_any_authenticated_user: false
-    allow_spdy: true
     pass_identity_headers: true
     set_request_headers:
       X-Forwarded-Proto: https
